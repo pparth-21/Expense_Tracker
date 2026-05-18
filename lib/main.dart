@@ -8,11 +8,7 @@ void main() {
       home: Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 252, 238),
 
-        drawer: const Drawer(
-          child: SafeArea(
-            child: SizedBox(),
-          ),
-        ),
+        drawer: const Drawer(child: SafeArea(child: SizedBox())),
 
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 220, 155, 155),
@@ -20,26 +16,15 @@ void main() {
           centerTitle: true,
           title: const Text(
             "Spendly!!",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           elevation: 4.0,
           shadowColor: const Color.fromARGB(0, 117, 117, 238),
         ),
 
         body: FrontPage(),
-
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: const Color.fromARGB(255, 220, 155, 155),
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          elevation: 6,
-          child: const Icon(Icons.add, size: 28),
         ),
       ),
-    ),
+    
   );
 }
