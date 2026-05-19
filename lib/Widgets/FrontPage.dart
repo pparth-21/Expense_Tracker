@@ -105,6 +105,7 @@ class _FrontPageState extends State<FrontPage> {
                         subtitle: Text(
                           "${exp.amount}\n${exp.note}\n${exp.date}",
                         ),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
                       ),
                     );
                   },
