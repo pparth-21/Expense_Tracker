@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_2/widgets/FrontPage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,6 +10,15 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
+    void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 3), () {        
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => FrontPage()), 
+      );
+    });
+  }
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
