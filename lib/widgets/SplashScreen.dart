@@ -14,8 +14,8 @@ class _SplashScreenState extends State<SplashScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color.fromARGB(255, 255,255,255),
-            Color.fromARGB(255, 255,210,210),
+            Color.fromARGB(255, 255, 255, 255),
+            Color.fromARGB(255, 255, 210, 210),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -23,17 +23,24 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [Text("Version 1.0.0")],
+          Padding(
+            
+            padding: EdgeInsets.only(top: 8, right: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [Text("Version 1.0.0")],
+            ),
           ),
-          Expanded(child: SizedBox(
-
-          )),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            
+           
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal:20 ,vertical: 200),
+              // padding: EdgeInsets.all(80),
+              child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
+              
               children: [
                 Icon(Icons.currency_bitcoin_outlined, size: 100),
                 Text(
@@ -45,24 +52,26 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
                 Text(
-                  "WE HELP YOU SPEND WISELY!!",
-                  style: TextStyle(fontSize: 15),
+                  '"WE HELP YOU SPEND WISELY!!:"',
+                  style: TextStyle(fontSize: 15, ),
                 ),
-                SizedBox(height: 10,),
-                
+                SizedBox(height: 150),
                 CircularProgressIndicator(
-                  color: const Color.fromARGB(110, 54, 54, 54),
+                  color: Color.fromARGB(110, 54, 54, 54),
                 ),
+                SizedBox(height: 20),
+                Text("Loading..."),
+                
+              
               ],
             ),
           ),
-          Expanded(child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text("Copyright © 2026 Spendly. All rights reserved."),
-            ],
-          ))
+          ),
+          Padding(
+            
+            padding: EdgeInsets.only(bottom: 16),
+            child: Text("Copyright © 2026 Spendly. All rights reserved."),
+          ),
         ],
       ),
     );
