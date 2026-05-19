@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/front_page.dart'; // Tip: standard Flutter formatting uses snake_case for filenames
-import 'widgets/splash_screen.dart';
+import 'widgets/FrontPage.dart'; // Tip: standard Flutter formatting uses snake_case for filenames
+import 'widgets/SplashScreen.dart';
 
 void main() {
   runApp(const SpendlyApp());
