@@ -11,10 +11,7 @@ class FrontPage extends StatefulWidget {
 }
 
 class _FrontPageState extends State<FrontPage> {
-  List<Expense> exps = [];
-  TextEditingController amountI = TextEditingController();
-  TextEditingController categoryI = TextEditingController();
-  TextEditingController noteI = TextEditingController();
+  
 
   void _addExpenseToList(BuildContext context) {
     String rawAmount = amountI.text;
