@@ -49,6 +49,7 @@ class _FrontPageState extends State<FrontPage> {
     amountI.text = e.amount.toString();
     categoryI.text = e.category;
     noteI.text = e.note;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -60,22 +61,56 @@ class _FrontPageState extends State<FrontPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              decoration: const InputDecoration(labelText: "Enter amount"),
+              decoration: const InputDecoration(
+                labelText: "Enter amount",
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
               controller: amountI,
+              keyboardType: TextInputType.number,
             ),
             TextField(
-              decoration: const InputDecoration(labelText: "Enter category"),
+              decoration: const InputDecoration(
+                labelText: "Enter category",
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
               controller: categoryI,
             ),
             TextField(
-              decoration: const InputDecoration(labelText: "Enter a note"),
+              decoration: const InputDecoration(
+                labelText: "Enter a note",
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
               controller: noteI,
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              amountI.clear();
+              categoryI.clear();
+              noteI.clear();
+              Navigator.pop(context);
+            },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                exps[index] = Expense(
+                  amount: double.tryParse(amountI.text) ?? e.amount,
+                  category: categoryI.text.isEmpty
+                      ? e.category
+                      : categoryI.text,
+                  note: noteI.text.isEmpty ? e.note : noteI.text,
+                  date: e.date,
+                );
+                amountI.clear();
+                categoryI.clear();
+                noteI.clear();
+              });
+              Navigator.pop(context);
+            },
             child: const Text("Edit"),
           ),
         ],
@@ -110,6 +145,15 @@ class _FrontPageState extends State<FrontPage> {
         ),
         actions: [
           TextButton(
+            onPressed: () {
+              amountI.clear();
+              categoryI.clear();
+              noteI.clear();
+              Navigator.pop(context);
+            },
+            child: Text("Cancel"),
+          ),
+          TextButton(
             onPressed: () => _addExpenseToList(context),
             child: const Text("Add"),
           ),
@@ -134,8 +178,22 @@ class _FrontPageState extends State<FrontPage> {
                   itemCount: exps.length,
                   itemBuilder: (context, index) {
                     final exp = exps[index];
-                    return Card(
-                      color: const Color.fromARGB(255, 225, 173, 186),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border(
+                          left: BorderSide(color: Color(0xFFDC9B9B), width: 4),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
                       child: ListTile(
                         leading: CircleAvatar(
                           child: Icon(Icons.currency_rupee_rounded),
@@ -148,7 +206,9 @@ class _FrontPageState extends State<FrontPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              onPressed: () {_showEditExpenseDialog(context, exp, index);},
+                              onPressed: () {
+                                _showEditExpenseDialog(context, exp, index);
+                              },
                               icon: Icon(Icons.edit),
                             ),
                             IconButton(
