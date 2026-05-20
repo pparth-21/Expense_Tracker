@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'models/expense.dart';
 import 'package:flutter_app_2/widgets/HomeExpScreen.dart';
-import 'package:flutter_app_2/widgets/EduExpScreen.dart';
+import 'package:flutter_app_2/widgets/Food.dart';
 import 'package:flutter_app_2/widgets/GroceriesExpScreen.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -49,13 +48,13 @@ class AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.book_online_outlined),
-              title: const Text("Education"),
+              title: const Text("Food"),
               onTap: () {
                 Navigator.pop(context); 
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const EduExpScreen(),
+                    builder: (_) => const Food(),
                   ),
                 );
               },

@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'models/expense.dart';
 
-class HomeExpScreen extends StatefulWidget {
-  const HomeExpScreen({super.key});
+class Food extends StatefulWidget {
+  const Food({super.key});
 
   @override
-  State<HomeExpScreen> createState() => _HomeExpScreenState();
+  State<Food> createState() => _FoodState();
 }
 
-String target = "Home";
-List<Expense> home = exps.where((e) {
+String target = "Food";
+List<Expense> food = exps.where((e) {
   return e.category.toLowerCase() == target.toLowerCase();
 }).toList();
 
-class _HomeExpScreenState extends State<HomeExpScreen> {
-  
-
+class _FoodState extends State<Food> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home Expenses"),
+        title: const Text("Food Expenses"),
         backgroundColor: const Color.fromARGB(255, 220, 155, 155),
         foregroundColor: Colors.white,
       ),
@@ -33,9 +31,9 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: home.length,
+                  itemCount: food.length,
                   itemBuilder: (context, index) {
-                    final h = home[index];
+                    final f = food[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
@@ -63,7 +61,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                           child: Icon(Icons.currency_rupee_rounded),
                         ),
                         title: Text(
-                          h.category,
+                          f.category,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -72,7 +70,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            "${h.note.isEmpty ? 'No note' : h.note}\n${h.date.toString().substring(0, 10)}",
+                            "${f.note.isEmpty ? 'No note' : f.note}\n${f.date.toString().substring(0, 10)}",
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               height: 1.3,
@@ -83,7 +81,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "₹${h.amount.toStringAsFixed(1)}",
+                              "₹${f.amount.toStringAsFixed(1)}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,

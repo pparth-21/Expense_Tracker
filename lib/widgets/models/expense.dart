@@ -13,3 +13,7 @@ class Expense {
     required this.date,
   });
 }
+List<Expense> exps = [];
+TextEditingController amountI = TextEditingController();
+TextEditingController categoryI = TextEditingController();
+TextEditingController noteI = TextEditingController();
