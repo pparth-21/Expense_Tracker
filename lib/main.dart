@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/FrontPage.dart'; 
 import 'widgets/SplashScreen.dart';
-
+import 'widgets/AppDrawer.dart';
 void main() {
   runApp(const SpendlyApp());
 }
@@ -44,11 +44,7 @@ class FrontPageLayout extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 255, 252, 238),
       
       // Drawer is now safely attached here
-      drawer: const Drawer(
-        child: SafeArea(
-          child: SizedBox(),
-        ),
-      ),
+      drawer: const AppDrawer(),
       
       // AppBar moved here with all your exact custom styling intact
       appBar: AppBar(
