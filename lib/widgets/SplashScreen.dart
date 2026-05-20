@@ -10,69 +10,69 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 255, 255, 255),
-            Color.fromARGB(255, 255, 210, 210),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            
-            padding: EdgeInsets.only(top: 8, right: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [Text("Version 1.0.0")],
-            ),
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 210, 210),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Expanded(
-            
-           
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal:20 ,vertical: 200),
-              // padding: EdgeInsets.all(80),
-              child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              
-              children: [
-                Icon(Icons.currency_bitcoin_outlined, size: 100),
-                Text(
-                  "Spendly",
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8, right: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: const [Text("Version 1.0.0")],
+              ),
+            ),
+
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.currency_bitcoin_outlined, size: 100),
+                      const Text(
+                        "Spendly",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Text(
+                        '"WE HELP YOU SPEND WISELY!!"',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      const SizedBox(height: 60),
+                      const CircularProgressIndicator(
+                        color: Color.fromARGB(110, 54, 54, 54),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text("Loading..."),
+                    ],
                   ),
                 ),
-                Text(
-                  '"WE HELP YOU SPEND WISELY!!:"',
-                  style: TextStyle(fontSize: 15, ),
-                ),
-                SizedBox(height: 150),
-                CircularProgressIndicator(
-                  color: Color.fromARGB(110, 54, 54, 54),
-                ),
-                SizedBox(height: 20),
-                Text("Loading..."),
-                
-              
-              ],
+              ),
             ),
-          ),
-          ),
-          Padding(
-            
-            padding: EdgeInsets.only(bottom: 16),
-            child: Text("Copyright © 2026 Spendly. All rights reserved."),
-          ),
-        ],
+
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Text("Copyright © 2026 Spendly. All rights reserved."),
+            ),
+          ],
+        ),
       ),
     );
   }
