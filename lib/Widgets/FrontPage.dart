@@ -39,10 +39,83 @@ class _FrontPageState extends State<FrontPage> {
         ),
       );
     });
-    amountI.clear(); 
-    categoryI.clear(); 
+    amountI.clear();
+    categoryI.clear();
     noteI.clear();
     Navigator.of(context).pop();
+  }
+
+  void _showEditExpenseDialog(BuildContext context, Expense e, int index) {
+    amountI.text = e.amount.toString();
+    categoryI.text = e.category;
+    noteI.text = e.note;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Edit Expense!',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: "Enter amount",
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
+              controller: amountI,
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: "Enter category",
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
+              controller: categoryI,
+            ),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: "Enter a note",
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
+              controller: noteI,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              amountI.clear();
+              categoryI.clear();
+              noteI.clear();
+              Navigator.pop(context);
+            },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                exps[index] = Expense(
+                  amount: double.tryParse(amountI.text) ?? e.amount,
+                  category: categoryI.text.isEmpty
+                      ? e.category
+                      : categoryI.text,
+                  note: noteI.text.isEmpty ? e.note : noteI.text,
+                  date: e.date,
+                );
+                amountI.clear();
+                categoryI.clear();
+                noteI.clear();
+              });
+              Navigator.pop(context);
+            },
+            child: const Text("Edit"),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showAddExpenseDialog(BuildContext context) {
@@ -72,6 +145,15 @@ class _FrontPageState extends State<FrontPage> {
         ),
         actions: [
           TextButton(
+            onPressed: () {
+              amountI.clear();
+              categoryI.clear();
+              noteI.clear();
+              Navigator.pop(context);
+            },
+            child: Text("Cancel"),
+          ),
+          TextButton(
             onPressed: () => _addExpenseToList(context),
             child: const Text("Add"),
           ),
@@ -96,7 +178,22 @@ class _FrontPageState extends State<FrontPage> {
                   itemCount: exps.length,
                   itemBuilder: (context, index) {
                     final exp = exps[index];
-                    return Card(
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border(
+                          left: BorderSide(color: Color(0xFFDC9B9B), width: 4),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
                       child: ListTile(
                         leading: CircleAvatar(
                           child: Icon(Icons.currency_rupee_rounded),
@@ -105,7 +202,25 @@ class _FrontPageState extends State<FrontPage> {
                         subtitle: Text(
                           "${exp.amount}\n${exp.note}\n${exp.date}",
                         ),
-                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                _showEditExpenseDialog(context, exp, index);
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  exps.remove(exp);
+                                });
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
