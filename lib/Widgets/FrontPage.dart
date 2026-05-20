@@ -39,8 +39,8 @@ class _FrontPageState extends State<FrontPage> {
         ),
       );
     });
-    amountI.clear(); 
-    categoryI.clear(); 
+    amountI.clear();
+    categoryI.clear();
     noteI.clear();
     Navigator.of(context).pop();
   }
@@ -97,6 +97,7 @@ class _FrontPageState extends State<FrontPage> {
                   itemBuilder: (context, index) {
                     final exp = exps[index];
                     return Card(
+                      color: const Color.fromARGB(255, 225, 173, 186),
                       child: ListTile(
                         leading: CircleAvatar(
                           child: Icon(Icons.currency_rupee_rounded),
@@ -105,7 +106,22 @@ class _FrontPageState extends State<FrontPage> {
                         subtitle: Text(
                           "${exp.amount}\n${exp.note}\n${exp.date}",
                         ),
-                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(onPressed: (){
+                              
+                            }, icon: Icon(Icons.edit)),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  exps.remove(exp);
+                                });
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
