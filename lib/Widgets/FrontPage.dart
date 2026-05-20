@@ -45,6 +45,44 @@ class _FrontPageState extends State<FrontPage> {
     Navigator.of(context).pop();
   }
 
+  void _showEditExpenseDialog(BuildContext context, Expense e, int index) {
+    amountI.text = e.amount.toString();
+    categoryI.text = e.category;
+    noteI.text = e.note;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Edit Expense!',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: const InputDecoration(labelText: "Enter amount"),
+              controller: amountI,
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: "Enter category"),
+              controller: categoryI,
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: "Enter a note"),
+              controller: noteI,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: const Text("Edit"),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showAddExpenseDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -109,9 +147,10 @@ class _FrontPageState extends State<FrontPage> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(onPressed: (){
-                              
-                            }, icon: Icon(Icons.edit)),
+                            IconButton(
+                              onPressed: () {_showEditExpenseDialog(context, exp, index);},
+                              icon: Icon(Icons.edit),
+                            ),
                             IconButton(
                               onPressed: () {
                                 setState(() {
