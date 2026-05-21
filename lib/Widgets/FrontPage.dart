@@ -13,7 +13,39 @@ class FrontPage extends StatefulWidget {
 }
 
 class _FrontPageState extends State<FrontPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    loadList(); 
+  }
+
   
+  Future<void> loadList() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? jsonString = prefs.getString('my-list');
+
+      if (jsonString != null) {
+        final List<dynamic> decodedList = jsonDecode(jsonString);
+        
+        final List<Expense> loadedExpenses = decodedList
+            .map((item) => Expense.fromJson(item))
+            .toList();
+
+        setState(() {
+          exps.clear(); 
+          exps.addAll(loadedExpenses); 
+        });
+        
+        print("Loaded ${exps.length} entries successfully into global list!");
+      }
+    } catch (e) {
+      print("Error loading data: $e");
+    }
+  }
+
+
   Future<void> saveList() async {
       print("hello");
       final SharedPreferences prefs = await SharedPreferences.getInstance();
