@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'models/expense.dart';
 
@@ -12,6 +14,18 @@ class FrontPage extends StatefulWidget {
 
 class _FrontPageState extends State<FrontPage> {
   
+  Future<void> saveList() async {
+    try{
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String JsonString = jsonEncode(exps.map((item) => item.toJson()).toList());
+      await prefs.setString('my-list', JsonString);
+
+      print("Saved successfully!");
+    }
+    catch(e){
+      print("Error: $e");
+    }
+  }
 
   void _addExpenseToList(BuildContext context) {
     String rawAmount = amountI.text;
@@ -94,6 +108,7 @@ class _FrontPageState extends State<FrontPage> {
                 categoryI.clear();
                 noteI.clear();
               });
+              saveList();
               Navigator.pop(context);
             },
             child: const Text("Edit"),
@@ -140,7 +155,7 @@ class _FrontPageState extends State<FrontPage> {
             child: const Text("Cancel"),
           ),
           TextButton(
-            onPressed: () => _addExpenseToList(context),
+            onPressed: (){_addExpenseToList(context); saveList();},
             child: const Text("Add"),
           ),
         ],
@@ -273,6 +288,7 @@ class _FrontPageState extends State<FrontPage> {
                                 setState(() {
                                   exps.remove(exp);
                                 });
+                                saveList();
                               },
                               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                             ),
