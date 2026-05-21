@@ -15,7 +15,7 @@ class _FrontPageState extends State<FrontPage> {
 
   DateTime? _selectedDate;
 
-  // ✅ Filters list by selected date
+  
   List<Expense> get _filtered {
     if (_selectedDate == null) return exps;
     return exps.where((e) =>
@@ -25,11 +25,11 @@ class _FrontPageState extends State<FrontPage> {
     ).toList();
   }
 
-  // ✅ Total of visible entries only
+  
   double get _total =>
       _filtered.fold(0.0, (sum, e) => sum + e.amount);
 
-  // ✅ Opens calendar
+  
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
