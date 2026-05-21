@@ -4,35 +4,43 @@ import 'models/expense.dart';
 
 
 class FrontPage extends StatefulWidget {
-  const FrontPage({super.key});
+  final List<Expense> expenses;
+  final void Function(Expense) onAdd;
+  final void Function(int) onDelete;
+
+  const FrontPage({
+    super.key,
+    required this.expenses,
+    required this.onAdd,
+    required this.onDelete,
+  });
 
   @override
   State<FrontPage> createState() => _FrontPageState();
 }
 
 class _FrontPageState extends State<FrontPage> {
-  List<Expense> exps = [];
+ 
   TextEditingController amountI = TextEditingController();
   TextEditingController categoryI = TextEditingController();
   TextEditingController noteI = TextEditingController();
 
   void _addExpenseToList(BuildContext context) {
-    String rawAmount = amountI.text;
-    double dAmount = double.tryParse(rawAmount) ?? 0.0;
-    setState(() {
-      exps.add(
-        Expense(
-          amount: dAmount,
-          category: categoryI.text,
-          note: noteI.text,
-          date: DateTime.now(),
-        ),
-      );
-    });
-    amountI.clear();
-    categoryI.clear();
-    noteI.clear();
-    Navigator.of(context).pop();
+     double dAmount = double.tryParse(amountI.text) ?? 0.0;
+  
+  widget.onAdd(
+    Expense(
+      amount: dAmount,
+      category: categoryI.text,
+      note: noteI.text,
+      date: DateTime.now(),
+    ),
+  );
+
+  amountI.clear();
+  categoryI.clear();
+  noteI.clear();
+  Navigator.of(context).pop();
   }
 
   void _showEditExpenseDialog(BuildContext context, Expense e, int index) {
@@ -87,7 +95,7 @@ class _FrontPageState extends State<FrontPage> {
           TextButton(
             onPressed: () {
               setState(() {
-                exps[index] = Expense(
+                widget.expenses[index] = Expense(
                   amount: double.tryParse(amountI.text) ?? e.amount,
                   category: categoryI.text.isEmpty ? e.category : categoryI.text,
                   note: noteI.text.isEmpty ? e.note : noteI.text,
@@ -153,8 +161,8 @@ class _FrontPageState extends State<FrontPage> {
 
   double showAmount() {
     double sum = 0;
-    for (int i = 0; i < exps.length; i++) {
-      sum += exps[i].amount;
+    for (int i = 0; i < widget.expenses.length; i++) {
+      sum += widget.expenses[i].amount;
     }
     return sum;
   }
@@ -175,7 +183,7 @@ class _FrontPageState extends State<FrontPage> {
                 padding: const EdgeInsets.all(24.0),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFE8A7A7), Color(0xFFDC9B9B)],
+                    colors: [Color.fromARGB(255, 255, 149, 149), Color.fromARGB(255, 255, 205, 205)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -218,9 +226,9 @@ class _FrontPageState extends State<FrontPage> {
               // LIST SECTION
               Expanded(
                 child: ListView.builder(
-                  itemCount: exps.length,
+                  itemCount: widget.expenses.length,
                   itemBuilder: (context, index) {
-                    final exp = exps[index];
+                    final exp = widget.expenses[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
@@ -274,7 +282,7 @@ class _FrontPageState extends State<FrontPage> {
                             IconButton(
                               onPressed: () {
                                 setState(() {
-                                  exps.remove(exp);
+                                  widget.expenses.remove(exp);
                                 });
                               },
                               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),

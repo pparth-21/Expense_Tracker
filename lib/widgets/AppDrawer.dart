@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
-import 'models/expense.dart';
-import 'package:flutter_app_2/widgets/HomeExpScreen.dart';
-import 'package:flutter_app_2/widgets/EduExpScreen.dart';
-import 'package:flutter_app_2/widgets/GroceriesExpScreen.dart';
+import 'package:flutter_app_2/widgets/models/expense.dart';
+import 'HomeExpScreen.dart';
+import 'EduExpScreen.dart';
+import 'GroceriesExpScreen.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  final List<Expense> expenses;
+
+  const AppDrawer({super.key, required this.expenses});
 
   @override
   Widget build(BuildContext context) {
-    
     return Drawer(
       child: SafeArea(
         child: Column(
-          
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              margin: const EdgeInsets.only(bottom: 20, ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+              margin: const EdgeInsets.only(bottom: 20,),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 220, 155, 155),
-              
+               
               ),
               child: const Text(
                 "FILTER BY CATEGORY",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color.fromARGB(255, 255, 253, 253),
-                  fontSize: 25,
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic,
                 ),
@@ -38,38 +38,27 @@ class AppDrawer extends StatelessWidget {
               leading: const Icon(Icons.home_outlined),
               title: const Text("Home"),
               onTap: () {
-                Navigator.pop(context); 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const HomeExpScreen(),
-                  ),
-                );
+                Navigator.pop(context);
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => HomeExpScreen(expenses: expenses)));
               },
             ),
             ListTile(
-              leading: const Icon(Icons.book_online_outlined),
+              leading: const Icon(Icons.school_outlined),
               title: const Text("Education"),
               onTap: () {
-                Navigator.pop(context); 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const EduExpScreen(),
-                  ),
-                );
+                Navigator.pop(context);
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => EduExpScreen(expenses: expenses)));
               },
-            ),ListTile(
-              leading: const Icon(Icons.shopping_bag_outlined),
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart_outlined),
               title: const Text("Groceries"),
               onTap: () {
-                Navigator.pop(context); 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const GroceriesExpScreen(),
-                  ),
-                );
+                Navigator.pop(context);
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => GroceriesExpScreen(expenses: expenses)));
               },
             ),
           ],

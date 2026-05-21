@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'widgets/FrontPage.dart'; 
 import 'widgets/SplashScreen.dart';
 import 'widgets/AppDrawer.dart';
+import 'package:flutter_app_2/widgets/models/expense.dart';
 void main() {
   runApp(const SpendlyApp());
 }
@@ -35,8 +36,23 @@ class SplashScreenLayout extends StatelessWidget {
 }
 
 /// 2. FRONT PAGE LAYOUT (Now includes your customized AppBar and Drawer)
-class FrontPageLayout extends StatelessWidget {
+class FrontPageLayout extends StatefulWidget {
   const FrontPageLayout({super.key});
+
+  @override
+  State<FrontPageLayout> createState() => _FrontPageLayoutState();
+}
+
+class _FrontPageLayoutState extends State<FrontPageLayout> {
+  final List<Expense> _expenses = [];
+
+  void _addExpense(Expense e) {
+    setState(() => _expenses.add(e));
+  }
+
+  void _deleteExpense(int index) {
+    setState(() => _expenses.removeAt(index));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +60,7 @@ class FrontPageLayout extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 255, 252, 238),
       
       // Drawer is now safely attached here
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(expenses: _expenses),
       
       // AppBar moved here with all your exact custom styling intact
       appBar: AppBar(
@@ -59,7 +75,10 @@ class FrontPageLayout extends StatelessWidget {
         shadowColor: const Color.fromARGB(0, 117, 117, 238),
       ),
       
-      body: const FrontPage(),
+      body: FrontPage(expenses: _expenses,
+        onAdd: _addExpense,
+        onDelete: _deleteExpense,
+      ),
     );
   }
 }
