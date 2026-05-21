@@ -17,9 +17,10 @@ class Expense {
       "amount": amount,
       "category": category,
       "note": note,
-      "date": date,
+      "date": date.toIso8601String(),
     };
   }
+  
 }
 List<Expense> exps = [];
 TextEditingController amountI = TextEditingController();

@@ -15,16 +15,10 @@ class FrontPage extends StatefulWidget {
 class _FrontPageState extends State<FrontPage> {
   
   Future<void> saveList() async {
-    try{
+      print("hello");
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      String JsonString = jsonEncode(exps.map((item) => item.toJson()).toList());
-      await prefs.setString('my-list', JsonString);
-
-      print("Saved successfully!");
-    }
-    catch(e){
-      print("Error: $e");
-    }
+      String jsonString = jsonEncode(exps.map((item) => item.toJson()).toList());
+      await prefs.setString('my-list', jsonString);
   }
 
   void _addExpenseToList(BuildContext context) {
@@ -43,6 +37,7 @@ class _FrontPageState extends State<FrontPage> {
     amountI.clear();
     categoryI.clear();
     noteI.clear();
+    saveList();
     Navigator.of(context).pop();
   }
 
@@ -155,7 +150,7 @@ class _FrontPageState extends State<FrontPage> {
             child: const Text("Cancel"),
           ),
           TextButton(
-            onPressed: (){_addExpenseToList(context); saveList();},
+            onPressed: (){_addExpenseToList(context);},
             child: const Text("Add"),
           ),
         ],
