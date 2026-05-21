@@ -9,13 +9,11 @@ class HomeExpScreen extends StatefulWidget {
 }
 
 String target = "Home";
-List<Expense> home = exps.where((e) {
+List<Expense> homeExpenses = exps.where((e) {
   return e.category.toLowerCase() == target.toLowerCase();
 }).toList();
 
 class _HomeExpScreenState extends State<HomeExpScreen> {
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +22,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
         backgroundColor: const Color.fromARGB(255, 220, 155, 155),
         foregroundColor: Colors.white,
       ),
-      backgroundColor: const Color(0xFFF7F9FC), // Soft background color
+      backgroundColor: const Color(0xFFF7F9FC),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
@@ -33,9 +31,9 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: home.length,
+                  itemCount: homeExpenses.length,
                   itemBuilder: (context, index) {
-                    final h = home[index];
+                    final expense = homeExpenses[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
@@ -63,7 +61,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                           child: Icon(Icons.currency_rupee_rounded),
                         ),
                         title: Text(
-                          h.category,
+                          expense.category,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -72,7 +70,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            "${h.note.isEmpty ? 'No note' : h.note}\n${h.date.toString().substring(0, 10)}",
+                            "${expense.note.isEmpty ? 'No note' : expense.note}\n${expense.date.toString().substring(0, 10)}",
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               height: 1.3,
@@ -83,7 +81,7 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "₹${h.amount.toStringAsFixed(1)}",
+                              "₹${expense.amount.toStringAsFixed(1)}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -93,7 +91,6 @@ class _HomeExpScreenState extends State<HomeExpScreen> {
                             const SizedBox(width: 8),
                             IconButton(
                               onPressed: () {},
-                              // _showEditExpenseDialog(context, h, index),
                               icon: const Icon(
                                 Icons.edit_outlined,
                                 color: Colors.grey,
