@@ -83,8 +83,7 @@ class _FrontPageState extends State<FrontPage> {
   }
 
   void _addExpenseToList(BuildContext context) {
-    String rawAmount = amountI.text;
-    double dAmount = double.tryParse(rawAmount) ?? 0.0;
+    double dAmount = double.tryParse(amountI.text) ?? 0.0;
     setState(() {
       exps.add(
         Expense(
@@ -103,8 +102,6 @@ class _FrontPageState extends State<FrontPage> {
   }
 
   void _showEditExpenseDialog(BuildContext context, Expense e) {
-    // FIX: No longer takes a filtered-list index. Resolves the real index
-    // in `exps` at save time, so editing works correctly when a filter is active.
     amountI.text = e.amount.toString();
     categoryI.text = e.category;
     noteI.text = e.note;
@@ -155,7 +152,6 @@ class _FrontPageState extends State<FrontPage> {
           ),
           TextButton(
             onPressed: () {
-              // FIX: Look up the real index in `exps`, not the filtered list
               final int realIndex = exps.indexOf(e);
               if (realIndex != -1) {
                 setState(() {
@@ -230,7 +226,6 @@ class _FrontPageState extends State<FrontPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Snapshot once so itemCount and itemBuilder always use the same list
     final List<Expense> filtered = _filtered;
 
     return Scaffold(
@@ -300,16 +295,16 @@ class _FrontPageState extends State<FrontPage> {
                   ],
                 ],
               ),
-
               const SizedBox(height: 16),
-
-              // TOTAL AMOUNT CARD
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24.0),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFE8A7A7), Color(0xFFDC9B9B)],
+                    colors: [
+                      Color.fromARGB(255, 255, 160, 160),
+                      Color.fromARGB(255, 255, 214, 214),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -326,7 +321,9 @@ class _FrontPageState extends State<FrontPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "TOTAL MONEY SPENT",
+                      _selectedDate == null
+                          ? "TOTAL MONEY SPENT"
+                          : "SPENT ON ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}",
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.85),
                         fontSize: 12,
@@ -336,7 +333,6 @@ class _FrontPageState extends State<FrontPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      // FIX: _total sums _filtered, so it respects the date filter
                       "₹${_total.toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.white,
@@ -348,99 +344,120 @@ class _FrontPageState extends State<FrontPage> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              // LIST SECTION
               Expanded(
-                child: ListView.builder(
-                  // FIX: Use `filtered` instead of `exps` so the date filter
-                  // actually affects what's shown in the list
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    final exp = filtered[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: const Border(
-                          left: BorderSide(color: Color(0xFFDC9B9B), width: 5),
-                        ),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 6,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        leading: const CircleAvatar(
-                          backgroundColor: Color(0xFFFBEBEB),
-                          foregroundColor: Color(0xFFDC9B9B),
-                          child: Icon(Icons.currency_rupee_rounded),
-                        ),
-                        title: Text(
-                          exp.category,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Text(
-                            "${exp.note.isEmpty ? 'No note' : exp.note}\n${exp.date.toString().substring(0, 10)}",
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              height: 1.3,
-                            ),
-                          ),
-                        ),
-                        trailing: Row(
+                child: filtered.isEmpty
+                    ? Center(
+                        child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            Icon(
+                              Icons.inbox_outlined,
+                              size: 60,
+                              color: Colors.grey.shade300,
+                            ),
+                            const SizedBox(height: 12),
                             Text(
-                              "₹${exp.amount.toStringAsFixed(1)}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              // FIX: Pass only `exp`, index resolved inside dialog
-                              onPressed: () =>
-                                  _showEditExpenseDialog(context, exp),
-                              icon: const Icon(
-                                Icons.edit_outlined,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  exps.remove(exp);
-                                });
-                                saveList();
-                              },
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.redAccent,
+                              _selectedDate == null
+                                  ? "No expenses yet!\nTap + to add one."
+                                  : "No expenses on this date.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 15,
                               ),
                             ),
                           ],
                         ),
+                      )
+                    : ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final exp = filtered[index];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: const Border(
+                                left: BorderSide(
+                                  color: Color(0xFFDC9B9B),
+                                  width: 5,
+                                ),
+                              ),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
+                              leading: const CircleAvatar(
+                                backgroundColor: Color(0xFFFBEBEB),
+                                foregroundColor: Color(0xFFDC9B9B),
+                                child: Icon(Icons.currency_rupee_rounded),
+                              ),
+                              title: Text(
+                                exp.category,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  "${exp.note.isEmpty ? 'No note' : exp.note}\n${exp.date.toString().substring(0, 10)}",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "₹${exp.amount.toStringAsFixed(1)}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    onPressed: () =>
+                                        _showEditExpenseDialog(context, exp),
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        exps.remove(exp);
+                                      });
+                                      saveList();
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.redAccent,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
