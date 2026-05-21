@@ -9,9 +9,7 @@ class FrontPage extends StatefulWidget {
 }
 
 class _FrontPageState extends State<FrontPage> {
-  TextEditingController amountI = TextEditingController();
-  TextEditingController categoryI = TextEditingController();
-  TextEditingController noteI = TextEditingController();
+  
 
   DateTime? _selectedDate;
 
