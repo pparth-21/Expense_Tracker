@@ -61,10 +61,8 @@ class _FrontPageState extends State<FrontPage> {
 
       if (jsonString != null) {
         final List<dynamic> decodedList = jsonDecode(jsonString);
-
-        final List<Expense> loadedExpenses = decodedList
-            .map((item) => Expense.fromJson(item))
-            .toList();
+        final List<Expense> loadedExpenses =
+            decodedList.map((item) => Expense.fromJson(item)).toList();
 
         setState(() {
           exps.clear();
@@ -79,7 +77,6 @@ class _FrontPageState extends State<FrontPage> {
   }
 
   Future<void> saveList() async {
-    print("hello");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String jsonString = jsonEncode(exps.map((item) => item.toJson()).toList());
     await prefs.setString('my-list', jsonString);
@@ -105,7 +102,9 @@ class _FrontPageState extends State<FrontPage> {
     Navigator.of(context).pop();
   }
 
-  void _showEditExpenseDialog(BuildContext context, Expense e, int index) {
+  void _showEditExpenseDialog(BuildContext context, Expense e) {
+    // FIX: No longer takes a filtered-list index. Resolves the real index
+    // in `exps` at save time, so editing works correctly when a filter is active.
     amountI.text = e.amount.toString();
     categoryI.text = e.category;
     noteI.text = e.note;
@@ -156,20 +155,23 @@ class _FrontPageState extends State<FrontPage> {
           ),
           TextButton(
             onPressed: () {
-              setState(() {
-                exps[index] = Expense(
-                  amount: double.tryParse(amountI.text) ?? e.amount,
-                  category: categoryI.text.isEmpty
-                      ? e.category
-                      : categoryI.text,
-                  note: noteI.text.isEmpty ? e.note : noteI.text,
-                  date: e.date,
-                );
-                amountI.clear();
-                categoryI.clear();
-                noteI.clear();
-              });
-              saveList();
+              // FIX: Look up the real index in `exps`, not the filtered list
+              final int realIndex = exps.indexOf(e);
+              if (realIndex != -1) {
+                setState(() {
+                  exps[realIndex] = Expense(
+                    amount: double.tryParse(amountI.text) ?? e.amount,
+                    category:
+                        categoryI.text.isEmpty ? e.category : categoryI.text,
+                    note: noteI.text.isEmpty ? e.note : noteI.text,
+                    date: e.date,
+                  );
+                });
+                saveList();
+              }
+              amountI.clear();
+              categoryI.clear();
+              noteI.clear();
               Navigator.pop(context);
             },
             child: const Text("Edit"),
@@ -226,18 +228,13 @@ class _FrontPageState extends State<FrontPage> {
     );
   }
 
-  double showAmount() {
-    double sum = 0;
-    for (int i = 0; i < exps.length; i++) {
-      sum += exps[i].amount;
-    }
-    return sum;
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Snapshot once so itemCount and itemBuilder always use the same list
+    final List<Expense> filtered = _filtered;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC), // Soft background color
+      backgroundColor: const Color(0xFFF7F9FC),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
@@ -282,8 +279,6 @@ class _FrontPageState extends State<FrontPage> {
                       ),
                     ),
                   ),
-
-                  // Clear button
                   if (_selectedDate != null) ...[
                     const SizedBox(width: 10),
                     GestureDetector(
@@ -307,7 +302,8 @@ class _FrontPageState extends State<FrontPage> {
               ),
 
               const SizedBox(height: 16),
-              // STYLED TOTAL AMOUNT CARD
+
+              // TOTAL AMOUNT CARD
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24.0),
@@ -340,7 +336,8 @@ class _FrontPageState extends State<FrontPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "₹${showAmount().toStringAsFixed(2)}",
+                      // FIX: _total sums _filtered, so it respects the date filter
+                      "₹${_total.toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,
@@ -351,14 +348,17 @@ class _FrontPageState extends State<FrontPage> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 24),
 
               // LIST SECTION
               Expanded(
                 child: ListView.builder(
-                  itemCount: exps.length,
+                  // FIX: Use `filtered` instead of `exps` so the date filter
+                  // actually affects what's shown in the list
+                  itemCount: filtered.length,
                   itemBuilder: (context, index) {
-                    final exp = exps[index];
+                    final exp = filtered[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
@@ -415,8 +415,9 @@ class _FrontPageState extends State<FrontPage> {
                             ),
                             const SizedBox(width: 8),
                             IconButton(
+                              // FIX: Pass only `exp`, index resolved inside dialog
                               onPressed: () =>
-                                  _showEditExpenseDialog(context, exp, index),
+                                  _showEditExpenseDialog(context, exp),
                               icon: const Icon(
                                 Icons.edit_outlined,
                                 color: Colors.grey,
