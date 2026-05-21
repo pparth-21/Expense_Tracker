@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'models/expense.dart';
 
@@ -9,25 +11,22 @@ class FrontPage extends StatefulWidget {
 }
 
 class _FrontPageState extends State<FrontPage> {
-  
-
   DateTime? _selectedDate;
 
-  
   List<Expense> get _filtered {
     if (_selectedDate == null) return exps;
-    return exps.where((e) =>
-      e.date.year == _selectedDate!.year &&
-      e.date.month == _selectedDate!.month &&
-      e.date.day == _selectedDate!.day
-    ).toList();
+    return exps
+        .where(
+          (e) =>
+              e.date.year == _selectedDate!.year &&
+              e.date.month == _selectedDate!.month &&
+              e.date.day == _selectedDate!.day,
+        )
+        .toList();
   }
 
-  
-  double get _total =>
-      _filtered.fold(0.0, (sum, e) => sum + e.amount);
+  double get _total => _filtered.fold(0.0, (sum, e) => sum + e.amount);
 
-  
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -49,6 +48,40 @@ class _FrontPageState extends State<FrontPage> {
     if (picked != null) setState(() => _selectedDate = picked);
   }
 
+  @override
+  void initState() {
+    super.initState();
+    loadList();
+  }
+
+  Future<void> loadList() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? jsonString = prefs.getString('my-list');
+
+      if (jsonString != null) {
+        final List<dynamic> decodedList = jsonDecode(jsonString);
+        final List<Expense> loadedExpenses =
+            decodedList.map((item) => Expense.fromJson(item)).toList();
+
+        setState(() {
+          exps.clear();
+          exps.addAll(loadedExpenses);
+        });
+
+        print("Loaded ${exps.length} entries successfully into global list!");
+      }
+    } catch (e) {
+      print("Error loading data: $e");
+    }
+  }
+
+  Future<void> saveList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jsonString = jsonEncode(exps.map((item) => item.toJson()).toList());
+    await prefs.setString('my-list', jsonString);
+  }
+
   void _addExpenseToList(BuildContext context) {
     double dAmount = double.tryParse(amountI.text) ?? 0.0;
     setState(() {
@@ -64,10 +97,11 @@ class _FrontPageState extends State<FrontPage> {
     amountI.clear();
     categoryI.clear();
     noteI.clear();
+    saveList();
     Navigator.of(context).pop();
   }
 
-  void _showEditExpenseDialog(BuildContext context, Expense e, int index) {
+  void _showEditExpenseDialog(BuildContext context, Expense e) {
     amountI.text = e.amount.toString();
     categoryI.text = e.category;
     noteI.text = e.note;
@@ -118,17 +152,22 @@ class _FrontPageState extends State<FrontPage> {
           ),
           TextButton(
             onPressed: () {
-              setState(() {
-                exps[index] = Expense(
-                  amount: double.tryParse(amountI.text) ?? e.amount,
-                  category: categoryI.text.isEmpty ? e.category : categoryI.text,
-                  note: noteI.text.isEmpty ? e.note : noteI.text,
-                  date: e.date,
-                );
-                amountI.clear();
-                categoryI.clear();
-                noteI.clear();
-              });
+              final int realIndex = exps.indexOf(e);
+              if (realIndex != -1) {
+                setState(() {
+                  exps[realIndex] = Expense(
+                    amount: double.tryParse(amountI.text) ?? e.amount,
+                    category:
+                        categoryI.text.isEmpty ? e.category : categoryI.text,
+                    note: noteI.text.isEmpty ? e.note : noteI.text,
+                    date: e.date,
+                  );
+                });
+                saveList();
+              }
+              amountI.clear();
+              categoryI.clear();
+              noteI.clear();
               Navigator.pop(context);
             },
             child: const Text("Edit"),
@@ -175,7 +214,9 @@ class _FrontPageState extends State<FrontPage> {
             child: const Text("Cancel"),
           ),
           TextButton(
-            onPressed: () => _addExpenseToList(context),
+            onPressed: () {
+              _addExpenseToList(context);
+            },
             child: const Text("Add"),
           ),
         ],
@@ -185,6 +226,8 @@ class _FrontPageState extends State<FrontPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Expense> filtered = _filtered;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9FC),
       body: SafeArea(
@@ -193,8 +236,6 @@ class _FrontPageState extends State<FrontPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              // ─── Date Filter Row ───────────────────────────────────────
               Row(
                 children: [
                   Expanded(
@@ -202,17 +243,20 @@ class _FrontPageState extends State<FrontPage> {
                       onTap: () => _pickDate(context),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: const Color(0xFFDC9B9B)),
+                          border: Border.all(color: const Color(0xFFDC9B9B)),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.calendar_month_outlined,
-                                color: Color(0xFFDC9B9B)),
+                            const Icon(
+                              Icons.calendar_month_outlined,
+                              color: Color(0xFFDC9B9B),
+                            ),
                             const SizedBox(width: 10),
                             Text(
                               _selectedDate == null
@@ -230,8 +274,6 @@ class _FrontPageState extends State<FrontPage> {
                       ),
                     ),
                   ),
-
-                  // Clear button
                   if (_selectedDate != null) ...[
                     const SizedBox(width: 10),
                     GestureDetector(
@@ -243,17 +285,17 @@ class _FrontPageState extends State<FrontPage> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.grey.shade300),
                         ),
-                        child: const Icon(Icons.close,
-                            color: Colors.redAccent, size: 20),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.redAccent,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ],
                 ],
               ),
-
               const SizedBox(height: 16),
-
-              // ─── Total Card ────────────────────────────────────────────
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24.0),
@@ -279,7 +321,6 @@ class _FrontPageState extends State<FrontPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      // ✅ Label changes based on date selected
                       _selectedDate == null
                           ? "TOTAL MONEY SPENT"
                           : "SPENT ON ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}",
@@ -292,7 +333,6 @@ class _FrontPageState extends State<FrontPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      // ✅ Total updates with filter
                       "₹${_total.toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.white,
@@ -304,18 +344,18 @@ class _FrontPageState extends State<FrontPage> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              // ─── List ──────────────────────────────────────────────────
               Expanded(
-                child: _filtered.isEmpty
+                child: filtered.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.inbox_outlined,
-                                size: 60, color: Colors.grey.shade300),
+                            Icon(
+                              Icons.inbox_outlined,
+                              size: 60,
+                              color: Colors.grey.shade300,
+                            ),
                             const SizedBox(height: 12),
                             Text(
                               _selectedDate == null
@@ -323,16 +363,17 @@ class _FrontPageState extends State<FrontPage> {
                                   : "No expenses on this date.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  fontSize: 15),
+                                color: Colors.grey.shade400,
+                                fontSize: 15,
+                              ),
                             ),
                           ],
                         ),
                       )
                     : ListView.builder(
-                        itemCount: _filtered.length,
+                        itemCount: filtered.length,
                         itemBuilder: (context, index) {
-                          final exp = _filtered[index];
+                          final exp = filtered[index];
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
@@ -340,7 +381,9 @@ class _FrontPageState extends State<FrontPage> {
                               borderRadius: BorderRadius.circular(20),
                               border: const Border(
                                 left: BorderSide(
-                                    color: Color(0xFFDC9B9B), width: 5),
+                                  color: Color(0xFFDC9B9B),
+                                  width: 5,
+                                ),
                               ),
                               boxShadow: const [
                                 BoxShadow(
@@ -351,9 +394,10 @@ class _FrontPageState extends State<FrontPage> {
                               ],
                             ),
                             child: ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 6),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
                               leading: const CircleAvatar(
                                 backgroundColor: Color(0xFFFBEBEB),
                                 foregroundColor: Color(0xFFDC9B9B),
@@ -362,16 +406,18 @@ class _FrontPageState extends State<FrontPage> {
                               title: Text(
                                 exp.category,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               subtitle: Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
                                   "${exp.note.isEmpty ? 'No note' : exp.note}\n${exp.date.toString().substring(0, 10)}",
                                   style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      height: 1.3),
+                                    color: Colors.grey.shade600,
+                                    height: 1.3,
+                                  ),
                                 ),
                               ),
                               trailing: Row(
@@ -388,17 +434,23 @@ class _FrontPageState extends State<FrontPage> {
                                   const SizedBox(width: 8),
                                   IconButton(
                                     onPressed: () =>
-                                        _showEditExpenseDialog(
-                                            context, exp, exps.indexOf(exp)),
-                                    icon: const Icon(Icons.edit_outlined,
-                                        color: Colors.grey),
+                                        _showEditExpenseDialog(context, exp),
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      setState(() => exps.remove(exp));
+                                      setState(() {
+                                        exps.remove(exp);
+                                      });
+                                      saveList();
                                     },
-                                    icon: const Icon(Icons.delete_outline,
-                                        color: Colors.redAccent),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.redAccent,
+                                    ),
                                   ),
                                 ],
                               ),
