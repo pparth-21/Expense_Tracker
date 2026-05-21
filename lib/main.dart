@@ -20,7 +20,7 @@ class SpendlyApp extends StatelessWidget {
   }
 }
 
-/// 1. SPLASH SCREEN LAYOUT (Clean, no AppBar or Drawer)
+
 class SplashScreenLayout extends StatelessWidget {
   const SplashScreenLayout({super.key});
 
@@ -28,13 +28,13 @@ class SplashScreenLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 252, 238),
-      // Clean canvas for your splash content to render full-screen
+    
       body: SplashScreen(),
     );
   }
 }
 
-/// 2. FRONT PAGE LAYOUT (Now includes your customized AppBar and Drawer)
+
 class FrontPageLayout extends StatelessWidget {
   const FrontPageLayout({super.key});
 
@@ -43,10 +43,10 @@ class FrontPageLayout extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 252, 238),
       
-      // Drawer is now safely attached here
+     
       drawer: const AppDrawer(),
       
-      // AppBar moved here with all your exact custom styling intact
+     
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 155, 155),
         foregroundColor: Colors.white,

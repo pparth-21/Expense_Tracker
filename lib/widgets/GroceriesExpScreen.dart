@@ -22,7 +22,7 @@ class _GroceriesExpScreenState extends State<GroceriesExpScreen> {
         backgroundColor: const Color.fromARGB(255, 220, 155, 155),
         foregroundColor: Colors.white,
       ),
-      backgroundColor: const Color(0xFFF7F9FC), // Soft background color
+      backgroundColor: const Color(0xFFF7F9FC),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
