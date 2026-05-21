@@ -48,7 +48,7 @@ class FrontPageLayout extends StatelessWidget {
       
       // AppBar moved here with all your exact custom styling intact
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 220, 155, 155),
+        backgroundColor: const Color.fromARGB(255, 255, 155, 155),
         foregroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
